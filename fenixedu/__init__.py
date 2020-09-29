@@ -81,9 +81,11 @@ class FenixEduClient(object):
 		url = self._get_api_endpoint_url(endpoint, endpoint_params)
 		return self._request(url, params, method, headers = headers)
 
-	def get_authentication_url(self):
+	def get_authentication_url(self, state=None):
 		auth_url = self._get_oauth_endpoint_url('userdialog')
 		params = {'client_id': self.config.client_id, 'redirect_uri': self.config.redirect_uri}
+		if state:
+			params['state'] = state
 
 		return self._add_parameters_to_url(auth_url, params)
 
