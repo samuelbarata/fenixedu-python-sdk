@@ -61,6 +61,7 @@ class FenixEduClient(object):
 		if r.status_code == 401:
 			self._refresh_access_token(user)
 			""" Repeat the request """
+			params['access_token'] = user.access_token
 			r = self._request(url, params = params, method = method, headers = headers)
 		return r
 
