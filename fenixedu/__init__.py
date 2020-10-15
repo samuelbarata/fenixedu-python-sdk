@@ -75,8 +75,9 @@ class FenixEduClient(object):
 		r_headers = {'content-type' : 'application/x-www-form-urlencoded'}
 		r = self._request(url, params = req_params, method = Requests.POST, headers = r_headers)
 		refresh = r.json()
-		user.access_token = refresh['access_token']
-		user.token_expires = refresh['expires_in']
+		if "access_token" in refresh:
+			user.access_token = refresh['access_token']
+			user.token_expires = refresh['expires_in']
 
 	def _api_public_request(self, endpoint, params=None, method=None, headers=None, endpoint_params=None):
 		url = self._get_api_endpoint_url(endpoint, endpoint_params)
