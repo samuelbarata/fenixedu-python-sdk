@@ -61,6 +61,7 @@ class FenixEduClient(object):
 		if r.status_code == 401:
 			self._refresh_access_token(user)
 			""" Repeat the request """
+			params['access_token'] = user.access_token
 			r = self._request(url, params = params, method = method, headers = headers)
 		return r
 
@@ -74,16 +75,19 @@ class FenixEduClient(object):
 		r_headers = {'content-type' : 'application/x-www-form-urlencoded'}
 		r = self._request(url, params = req_params, method = Requests.POST, headers = r_headers)
 		refresh = r.json()
-		user.access_token = refresh['access_token']
-		user.token_expires = refresh['expires_in']
+		if "access_token" in refresh:
+			user.access_token = refresh['access_token']
+			user.token_expires = refresh['expires_in']
 
 	def _api_public_request(self, endpoint, params=None, method=None, headers=None, endpoint_params=None):
 		url = self._get_api_endpoint_url(endpoint, endpoint_params)
 		return self._request(url, params, method, headers = headers)
 
-	def get_authentication_url(self):
+	def get_authentication_url(self, state=None):
 		auth_url = self._get_oauth_endpoint_url('userdialog')
 		params = {'client_id': self.config.client_id, 'redirect_uri': self.config.redirect_uri}
+		if state:
+			params['state'] = state
 
 		return self._add_parameters_to_url(auth_url, params)
 
